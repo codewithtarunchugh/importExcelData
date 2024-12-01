@@ -1,0 +1,102 @@
+﻿using HtmlAgilityPack;
+using OfficeOpenXml;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Set the license context
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Change this as needed
+
+        Console.WriteLine("Test");
+        //string[] htmlFiles = Directory.GetFiles("C:\\My Web Sites\\lawrato\\lawrato.com\\banking-finance-legal-advice", "*.html");
+        string[] htmlFiles = Directory.GetFiles("C:\\My Web Sites\\lawrato\\lawrato.com\\banking-finance-legal-advice", "*.html");
+
+        // Create a new Excel package
+        using (var package = new ExcelPackage())
+        {
+            // Add a new worksheet to the empty workbook
+            var worksheet = package.Workbook.Worksheets.Add("Law Advice Data");
+
+            // Add headers to the Excel sheet
+            worksheet.Cells[1, 1].Value = "S. No";
+            worksheet.Cells[1, 2].Value = "Category";
+            worksheet.Cells[1, 3].Value = "Question Text";
+            worksheet.Cells[1, 4].Value = "User Question Text";
+            worksheet.Cells[1, 5].Value = "Recent Questions"; // New column for recent questions
+
+            // Initialize the row counter and question number
+            int row = 2;
+
+            foreach (var file in htmlFiles)
+            {
+                var doc = new HtmlDocument();
+                doc.Load(file);
+
+                var spanNodeCategory = doc.DocumentNode.SelectSingleNode("//div[@id='main']//section[@id='breadcrumb']//li[2]/a");
+                var spanNode = doc.DocumentNode.SelectSingleNode("//div[@id='main']//section[@id='breadcrumb']//li[3]/span");
+
+                // Extract category and question text
+                string category = spanNodeCategory?.InnerText.Trim() ?? "N/A";
+                string questionText = spanNode?.InnerText.Trim() ?? "N/A";
+
+                // Add S. No, category, and question text to the Excel sheet
+                worksheet.Cells[row, 1].Value = row - 1; // Serial number
+                worksheet.Cells[row, 2].Value = category;
+                worksheet.Cells[row, 3].Value = questionText;
+
+                // Extract the actual user question text
+                var questionBodyNode = doc.DocumentNode.SelectSingleNode("//div[@class='question-body']/div[@itemprop='text']");
+                string userQuestionText = questionBodyNode?.InnerText.Trim() ?? "N/A";
+                worksheet.Cells[row, 4].Value = userQuestionText; // Add user question text
+
+                // Extract recent questions
+                var recentQuestionsNode = doc.DocumentNode.SelectSingleNode("//div[@id='hiderelque']//ul");
+                string recentQuestions = "";
+
+                if (recentQuestionsNode != null)
+                {
+                    var liNodes = recentQuestionsNode.SelectNodes("./li/a");
+                    if (liNodes != null)
+                    {
+                        foreach (var li in liNodes)
+                        {
+                            recentQuestions += li.InnerText.Trim() + "\n "; // Concatenate with a separator
+                        }
+                    }
+                }
+
+                worksheet.Cells[row, 5].Value = recentQuestions.TrimEnd(';', ' '); // Add recent questions to the Excel sheet
+
+                // Extract answers
+                var answerNodes = doc.DocumentNode.SelectNodes("//div[@class='answer-body']");
+                int answerColumn = 6; // Start writing answers from column F
+
+                // Iterate through each answer-body node and extract text
+                if (answerNodes != null)
+                {
+                    foreach (var answerNode in answerNodes)
+                    {
+                        var textNode = answerNode.SelectSingleNode("./div[@itemprop='text']");
+                        if (textNode != null)
+                        {
+                            // Replace <br> with new lines for better readability
+                            var extractedText = textNode.InnerHtml.Replace("<br>", "\n").Trim();
+
+                            // Add answer text to the Excel sheet in the next column
+                            worksheet.Cells[row, answerColumn++].Value = extractedText; // Add to next column
+                        }
+                    }
+                }
+
+                // Move to the next row for the next question
+                row++;
+            }
+
+            // Save the Excel file
+            var excelFilePath = "C:\\My Web Sites\\lawrato\\lawrato.com\\law_advice_kanoonkibaat.xlsx";
+            package.SaveAs(new FileInfo(excelFilePath));
+            Console.WriteLine($"Data successfully saved to {excelFilePath}");
+        }
+    }
+}
