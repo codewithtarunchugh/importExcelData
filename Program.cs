@@ -531,7 +531,7 @@
 //    static void Main(string[] args)
 //    {
 //        // Define the connection string
-//        string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=pokipoki;TrustServerCertificate=True";
+//        string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=;TrustServerCertificate=True";
 
 //        // Base directory to start searching
 //        string baseDirectory = "F:\\lawrato\\lawrato.com\\indian-kanoon";
@@ -680,7 +680,7 @@ class Program
     static void Main(string[] args)
     {
         // Define the connection string
-        //string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=pokipoki;TrustServerCertificate=True";
+        //string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=;TrustServerCertificate=True";
         string connectionString = "Data Source=sql8002.site4now.net;Initial Catalog=db_a94bc9_crm;persist security info=True;User ID=db_a94bc9_crm_admin;Password=AFvpc8943a;TrustServerCertificate=True";
 
         // Base directory to start searching
@@ -1888,7 +1888,7 @@ class Program
     static async Task Main(string[] args)
     {
         // Define the connection string for the SQL Server database
-        //string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=pokipoki;TrustServerCertificate=True";
+        //string connectionString = "Data Source=.;Initial Catalog=CRM_AVINO;persist security info=True;User ID=sa;Password=;TrustServerCertificate=True";
         string connectionString = "Data Source=sql8002.site4now.net;Initial Catalog=db_a94bc9_crm;persist security info=True;User ID=db_a94bc9_crm_admin;Password=AFvpc8943a;TrustServerCertificate=True";
 
         // Path to the text file that contains the links (URLs)
